@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery, Query, Types } from "mongoose";
+import { FilterQuery, Query } from "mongoose";
 
 class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -15,19 +15,9 @@ class QueryBuilder<T> {
     if (searchTerm) {
       const orConditions: FilterQuery<T>[] = searchableFields
         .map((field) => {
-          if (field === "price") {
+          if (field === "size") {
             const numericValue = Number(searchTerm);
             if (!isNaN(numericValue)) return { [field]: numericValue };
-            return null;
-          }
-
-          // Handle ObjectId fields (like category)
-          if (["category"].includes(field)) {
-            if (mongoose.Types.ObjectId.isValid(searchTerm as string)) {
-              return {
-                [field]: new mongoose.Types.ObjectId(searchTerm as string),
-              };
-            }
             return null;
           }
 
@@ -50,56 +40,10 @@ class QueryBuilder<T> {
   filter() {
     const queryObj = { ...this.query }; // copy
 
-    // console.log(queryObj);
-
     // Filtering
     const excludeFields = ["searchTerm", "sort", "limit", "page", "fields"];
 
     excludeFields.forEach((el) => delete queryObj[el]);
-
-    // if (typeof queryObj.category === 'string') {
-    //   queryObj.category = {
-    //     $in: queryObj.category
-    //       .split(',')
-    //       .map((category) => new RegExp(category.trim(), 'i')), // Partial match, no ^ or $
-    //   };
-    // }
-
-    if (typeof queryObj.category === "string") {
-      queryObj.category = {
-        $in: queryObj.category
-          .split(",")
-          .map((id) => new Types.ObjectId(id.trim())),
-      };
-    }
-
-    if ("title" in queryObj) {
-      queryObj.title = {
-        $regex: queryObj.title,
-        $options: "i",
-      };
-    }
-
-    if ("availability" in queryObj) {
-      queryObj.isAvailable =
-        queryObj.availability === "true" || queryObj.availability === true;
-      delete queryObj.availability;
-    }
-
-    if ("minPrice" in queryObj || "maxPrice" in queryObj) {
-      const priceFilter: { $gte?: number; $lte?: number } = {};
-      if ("minPrice" in queryObj) {
-        priceFilter.$gte = Number(queryObj.minPrice);
-      }
-      if ("maxPrice" in queryObj) {
-        priceFilter.$lte = Number(queryObj.maxPrice);
-      }
-
-      (queryObj as any).price = priceFilter; // change the rentPrice as needed as that is the field name in the database
-
-      delete queryObj.minPrice;
-      delete queryObj.maxPrice;
-    }
 
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 

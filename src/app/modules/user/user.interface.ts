@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 export type TUser = {
   name: string;
@@ -9,11 +9,11 @@ export type TUser = {
   address?: string;
   profileImg?: string;
   status?: string;
-  isDeleted: boolean;
+  isDeleted?: boolean;
 };
 
 export type TUserRole = "admin" | "seller";
 
 export interface IUser extends Model<TUser> {
-  isUserExists(id: string): Promise<TUser | null>;
+  isUserExists(id: Types.ObjectId): Promise<TUser | null>;
 }

@@ -30,9 +30,15 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// empty password field
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
+
 // check user exists
-userSchema.statics.isUserExists = async function (id: string) {
-  return await UserModel.findOne({ id }).select("+password");
+userSchema.statics.isUserExists = async function (id: Schema.Types.ObjectId) {
+  return await UserModel.findOne({ _id: id }).select("+password");
 };
 
 // check password is matched or not
