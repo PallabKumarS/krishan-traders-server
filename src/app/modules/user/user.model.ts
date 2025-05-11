@@ -46,7 +46,7 @@ userSchema.statics.isPasswordMatched = async function (
   myPlaintextPassword,
   hashedPassword
 ) {
-  return bcrypt.compare(myPlaintextPassword, hashedPassword);
+  return await bcrypt.compare(myPlaintextPassword, hashedPassword);
 };
 
 const UserModel = model<TUser, IUser>("Users", userSchema);

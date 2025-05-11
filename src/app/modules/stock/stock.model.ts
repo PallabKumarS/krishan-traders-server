@@ -7,10 +7,10 @@ const stockSchema = new Schema<TStock>(
     productName: { type: String, required: true },
     size: { type: String, required: true },
     quantity: { type: Number, required: true },
-    stockingDate: { type: Date, required: true },
+    stockDate: { type: Date, required: true },
     expiryDate: { type: Date, required: true },
     sellDate: { type: Date },
-    acceptedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    stockedBy: { type: Schema.Types.ObjectId, ref: "User",required: true },
     soldBy: { type: Schema.Types.ObjectId, ref: "User" },
     status: {
       type: String,

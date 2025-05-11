@@ -4,16 +4,26 @@ export type TUser = {
   name: string;
   email: string;
   password: string;
-  role: "admin" | "seller";
+  role: TUserRole;
+  status: TUserStatus;
+  isDeleted: boolean;
   phoneNumber?: string;
   address?: string;
   profileImg?: string;
-  status?: string;
-  isDeleted?: boolean;
+  _id?: Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type TUserRole = "admin" | "seller";
 
+export type TUserStatus = "active" | "blocked";
+
 export interface IUser extends Model<TUser> {
   isUserExists(id: Types.ObjectId): Promise<TUser | null>;
+
+  isPasswordMatched(
+    myPlaintextPassword: string,
+    hashedPassword: string
+  ): Promise<boolean>;
 }
