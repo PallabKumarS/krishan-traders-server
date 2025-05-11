@@ -45,6 +45,12 @@ class QueryBuilder<T> {
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
+    // if ("status" in queryObj) {
+    //   const status = queryObj.status as string;
+
+    //   delete queryObj.status;
+    // }
+
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 
     return this;

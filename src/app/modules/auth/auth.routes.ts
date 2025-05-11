@@ -4,6 +4,7 @@ import validateRequest from "../../middlewares/validateRequest";
 import auth from "../../middlewares/auth";
 import { USER_ROLE } from "../user/user.constant";
 import { AuthValidation } from "./auth.validation";
+import { UserValidation } from "../user/user.validation";
 
 const router = Router();
 
@@ -11,6 +12,12 @@ router.post(
   "/login",
   validateRequest(AuthValidation.loginValidationSchema),
   AuthController.loginUser
+);
+
+router.post(
+  "/register",
+  validateRequest(UserValidation.registerValidationSchema),
+  AuthController.registerUser
 );
 
 router.patch(

@@ -1,35 +1,47 @@
-import { AuthService } from './auth.service';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import httpStatus from 'http-status';
+import { AuthService } from "./auth.service";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import httpStatus from "http-status";
 
 // login user controller
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUser(req.body);
   const { refreshToken, accessToken } = result;
 
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     secure: true,
     httpOnly: true,
-    sameSite: 'none',
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 
-  res.cookie('accessToken', accessToken, {
+  res.cookie("accessToken", accessToken, {
     secure: true,
     httpOnly: true,
-    sameSite: 'none',
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24,
   });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User is logged in successfully!',
+    message: "User is logged in successfully!",
     data: {
       accessToken,
       refreshToken,
     },
+  });
+});
+
+// register user controller
+const registerUser = catchAsync(async (req, res) => {
+  const user = await AuthService.registerUser(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "User created successfully",
+    data: user,
   });
 });
 
@@ -41,7 +53,7 @@ const changePassword = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Password is updated successfully!',
+    message: "Password is updated successfully!",
     data: result,
   });
 });
@@ -54,9 +66,14 @@ const refreshToken = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Access token is retrieved successfully!',
+    message: "Access token is retrieved successfully!",
     data: result,
   });
 });
 
-export const AuthController = { loginUser, changePassword, refreshToken };
+export const AuthController = {
+  loginUser,
+  registerUser,
+  changePassword,
+  refreshToken,
+};

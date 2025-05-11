@@ -33,12 +33,6 @@ const getMeFromDB = async (id: string) => {
   return user;
 };
 
-// create user
-const createUserInDB = async (payload: Partial<TUser>) => {
-  const user = await UserModel.create(payload);
-  return user;
-};
-
 // update user
 const updateUserInDB = async (id: string, payload: Partial<TUser>) => {
   const isUserExists = await UserModel.isUserExists(new Types.ObjectId(id));
@@ -52,6 +46,53 @@ const updateUserInDB = async (id: string, payload: Partial<TUser>) => {
   });
 
   return user;
+};
+
+const updateUserStatusIntoDB = async (id: string) => {
+  const isUserExist = await UserModel.findOne({ _id: id });
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "User does not exist");
+  }
+
+  const result = await UserModel.findOneAndUpdate(
+    { _id: id },
+    { isActive: isUserExist.status === "active" ? "blocked" : "active" },
+    {
+      new: true,
+    }
+  );
+  return result;
+};
+
+// update user role into db
+const updateUserRoleIntoDB = async (
+  id: string,
+  data: {
+    role: string;
+  }
+) => {
+  const isUserExist = await UserModel.findOne({ _id: id });
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "User does not exist");
+  }
+
+  if (isUserExist.role === "admin") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This user is an admin. You cannot change his role."
+    );
+  }
+
+  const result = await UserModel.findOneAndUpdate(
+    { _id: id },
+    { role: data.role },
+    {
+      new: true,
+    }
+  );
+
+  return result;
 };
 
 // delete user
@@ -70,7 +111,8 @@ const deleteUserFromDB = async (id: string) => {
 export const UserService = {
   getAllUserFromDB,
   getMeFromDB,
-  createUserInDB,
   updateUserInDB,
   deleteUserFromDB,
+  updateUserStatusIntoDB,
+  updateUserRoleIntoDB,
 };

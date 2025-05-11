@@ -4,6 +4,10 @@ import config from "./app/config";
 import globalErrorHandler from "./app/middlewares/globalErrorhandler";
 import notFound from "./app/middlewares/notFound";
 import cookieParser from "cookie-parser";
+import { AuthRoutes } from "./app/modules/auth/auth.routes";
+import { UserRoutes } from "./app/modules/user/user.routes";
+import { StockRoutes } from "./app/modules/stock/stock.routes";
+import { RecordRoutes } from "./app/modules/record/record.routes";
 
 const app: Application = express();
 
@@ -19,6 +23,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 // all routes here
+app.use("/api/auth", AuthRoutes);
+app.use("/api/users", UserRoutes);
+app.use("/api/stocks", StockRoutes);
+app.use("/api/records", RecordRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`

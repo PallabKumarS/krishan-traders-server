@@ -6,6 +6,7 @@ import { createToken, verifyToken } from "./auth.utils";
 import { TLoginUser } from "./auth.interface";
 import { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { TUser } from "../user/user.interface";
 
 // login user here
 const loginUser = async (payload: TLoginUser) => {
@@ -59,6 +60,12 @@ const loginUser = async (payload: TLoginUser) => {
     accessToken,
     refreshToken,
   };
+};
+
+// register user
+const registerUser = async (payload: Partial<TUser>) => {
+  const user = await UserModel.create(payload);
+  return user;
 };
 
 // change password here
@@ -156,4 +163,5 @@ export const AuthService = {
   loginUser,
   changePassword,
   refreshToken,
+  registerUser,
 };

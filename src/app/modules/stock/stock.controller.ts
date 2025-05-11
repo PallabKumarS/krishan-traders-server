@@ -57,6 +57,19 @@ const updateStock = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// accept stock
+const acceptStock = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id!;
+  const result = await StockService.acceptStockInDB(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Stock accepted successfully",
+    data: result,
+  });
+});
+
 // delete stock
 const deleteStock = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id!;
@@ -76,4 +89,5 @@ export const StockController = {
   sellStock,
   updateStock,
   deleteStock,
+  acceptStock,
 };

@@ -18,5 +18,6 @@
     "titleBar.inactiveBackground": "#42127c99",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#42127c"
+  "peacock.color": "#42127c",
+  "cSpell.words": ["krishan"]
 }

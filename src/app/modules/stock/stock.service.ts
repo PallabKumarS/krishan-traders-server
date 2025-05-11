@@ -143,6 +143,27 @@ const sellStockFromDB = async (
   }
 };
 
+// change stock status to accepted
+const acceptStockInDB = async (id: string) => {
+  const isStockExist = await StockModel.findOne({
+    _id: id,
+  });
+
+  if (!isStockExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Stock not found");
+  }
+
+  const result = await StockModel.findOneAndUpdate(
+    { _id: id },
+    { status: "accepted" },
+    {
+      new: true,
+    }
+  );
+
+  return result;
+};
+
 // delete stock
 const deleteStockFromDB = async (id: string) => {
   const isStockExist = await StockModel.findOne({
@@ -163,5 +184,6 @@ export const StockService = {
   addStockToDB,
   updateStockInDB,
   sellStockFromDB,
+  acceptStockInDB,
   deleteStockFromDB,
 };
