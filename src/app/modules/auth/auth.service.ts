@@ -11,7 +11,15 @@ import { TUser } from "../user/user.interface";
 // login user here
 const loginUser = async (payload: TLoginUser) => {
   // checking if the user is exist
-  const user = await UserModel.findOne({ email: payload.email });
+  const user = await UserModel.findOne(
+    { email: payload.email },
+    {
+      password: 1,
+      role: 1,
+      email: 1,
+      status: 1,
+    }
+  );
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "This user is not found !");
