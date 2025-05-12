@@ -21,3 +21,4 @@ export type TStockStatus =
   | "accepted"
   | "sold"
   | "expired"
+  | "rejected";

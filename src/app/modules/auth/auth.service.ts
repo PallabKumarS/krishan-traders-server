@@ -18,6 +18,7 @@ const loginUser = async (payload: TLoginUser) => {
       role: 1,
       email: 1,
       status: 1,
+      isDeleted: 1,
     }
   );
 
@@ -82,7 +83,16 @@ const changePassword = async (
   payload: { oldPassword: string; newPassword: string }
 ) => {
   // checking if the user is exist
-  const user = await UserModel.isUserExists(userData.email);
+  const user = await UserModel.findOne(
+    { _id: userData.userId },
+    {
+      password: 1,
+      role: 1,
+      email: 1,
+      status: 1,
+      isDeleted: 1,
+    }
+  );
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "This user is not found !");
@@ -114,15 +124,18 @@ const changePassword = async (
     Number(config.bcrypt_salt_rounds)
   );
 
-  await UserModel.findOneAndUpdate(
+  const result = await UserModel.findOneAndUpdate(
     {
-      userId: userData.userId,
+      _id: userData.userId,
     },
     {
       password: newHashedPassword,
-      passwordChangedAt: new Date(),
     }
   );
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to update password!");
+  }
 
   return null;
 };

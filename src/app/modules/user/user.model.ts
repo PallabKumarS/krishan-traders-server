@@ -10,7 +10,7 @@ const userSchema = new Schema<TUser, IUser>(
     password: { type: String, required: true, select: 0 },
     role: {
       type: String,
-      enum: ["admin", "seller", "guest"],
+      enum: ["admin", "staff", "guest"],
       default: "guest",
     },
     phoneNumber: { type: String },

@@ -22,6 +22,11 @@ const recordSchema = new Schema<TRecord>(
       ref: "Stocks",
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "sold", "stocked", "rejected"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

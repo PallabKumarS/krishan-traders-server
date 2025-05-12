@@ -7,6 +7,7 @@ export type TRecord = {
   stockDate?: string;
   quantity: number;
   stockId: Types.ObjectId;
+  status: "sold" | "stocked" | "pending" | "rejected" | "accepted";
   _id?: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;

@@ -10,26 +10,18 @@ const stockSchema = new Schema<TStock>(
     stockDate: { type: Date, required: true },
     expiryDate: { type: Date, required: true },
     sellDate: { type: Date },
-    stockedBy: { type: Schema.Types.ObjectId, ref: "User",required: true },
+    stockedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     soldBy: { type: Schema.Types.ObjectId, ref: "User" },
     status: {
       type: String,
-      enum: ["PENDING", "ACCEPTED", "SOLD", "EXPIRED"],
-      default: "PENDING",
+      enum: ["pending", "accepted", "sold", "expired", "rejected"],
+      default: "pending",
     },
   },
   {
     timestamps: true,
   }
 );
-
-stockSchema.pre("save", function (next) {
-  const currentDate = new Date();
-  if (this.expiryDate < currentDate) {
-    this.status = "EXPIRED";
-  }
-  next();
-});
 
 const StockModel = model<TStock>("Stocks", stockSchema);
 

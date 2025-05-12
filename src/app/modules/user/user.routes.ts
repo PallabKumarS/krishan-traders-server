@@ -8,15 +8,11 @@ const router = Router();
 // Define routes
 router.get("/", auth(USER_ROLE.admin), UserController.getAllUser);
 
-router.get(
-  "/me",
-  auth(USER_ROLE.admin, USER_ROLE.seller),
-  UserController.getMe
-);
+router.get("/me", auth(USER_ROLE.admin, USER_ROLE.staff), UserController.getMe);
 
 router.patch(
   "/:id",
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.staff),
   UserController.updateUser
 );
 

@@ -51,6 +51,9 @@ const addStockToDB = async (payload: Partial<TStock>) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
     }
 
+    await session.commitTransaction();
+    await session.endSession();
+
     return stockResult[0];
   } catch (error) {
     await session.abortTransaction();
@@ -145,23 +148,48 @@ const sellStockFromDB = async (
 
 // change stock status to accepted
 const acceptStockInDB = async (id: string) => {
-  const isStockExist = await StockModel.findOne({
-    _id: id,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!isStockExist) {
-    throw new AppError(httpStatus.NOT_FOUND, "Stock not found");
-  }
+  try {
+    const isStockExist = await StockModel.findOne({
+      _id: id,
+    });
 
-  const result = await StockModel.findOneAndUpdate(
-    { _id: id },
-    { status: "accepted" },
-    {
-      new: true,
+    if (!isStockExist) {
+      throw new AppError(httpStatus.NOT_FOUND, "Stock not found");
     }
-  );
 
-  return result;
+    const result = await StockModel.findOneAndUpdate(
+      { _id: id },
+      { status: "accepted" },
+      {
+        new: true,
+      }
+    );
+
+    if (!result) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to accept stock");
+    }
+
+    const recordResult = await RecordModel.findOneAndUpdate(
+      { stockId: result._id },
+      { status: "accepted" },
+      { new: true }
+    );
+
+    if (!recordResult) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
 };
 
 // delete stock

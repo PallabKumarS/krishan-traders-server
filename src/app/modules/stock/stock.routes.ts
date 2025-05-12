@@ -8,19 +8,19 @@ const router = Router();
 // Define routes
 router.get(
   "/",
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.staff),
   StockController.getAllStock
 );
 
 router.post(
-  "/",
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  "/add-stock",
+  auth(USER_ROLE.admin, USER_ROLE.staff),
   StockController.addStock
 );
 
 router.post(
   "/sell-stock",
-  auth(USER_ROLE.admin, USER_ROLE.seller),
+  auth(USER_ROLE.admin, USER_ROLE.staff),
   StockController.sellStock
 );
 

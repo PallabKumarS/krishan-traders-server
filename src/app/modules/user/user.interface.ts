@@ -15,7 +15,7 @@ export type TUser = {
   updatedAt?: Date;
 };
 
-export type TUserRole = "admin" | "seller" | "guest";
+export type TUserRole = "admin" | "staff" | "guest";
 
 export type TUserStatus = "active" | "blocked";
 
