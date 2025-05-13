@@ -9,18 +9,15 @@ import { TRecord } from "./record.interface";
 
 // get all records
 const getAllRecordFromDB = async (query: Record<string, unknown>) => {
-  const recordQuery = new QueryBuilder(
-    RecordModel.find({})
-      .populate("stockId")
-      .populate("soldBy")
-      .populate("stockedBy"),
-    query
-  )
+  const recordQuery = new QueryBuilder(RecordModel.find({}), query)
     .paginate()
     .sort()
     .filter();
 
-  const data = await recordQuery.modelQuery;
+  const data = await recordQuery.modelQuery
+    .populate("stockId")
+    .populate("soldBy")
+    .populate("stockedBy");
 
   const meta = await recordQuery.countTotal();
 
@@ -87,14 +84,19 @@ const sellStockFromDB = async (payload: Partial<TRecord>) => {
   session.startTransaction();
 
   try {
-    const recordResult = await RecordModel.create({
-      stockId: payload.stockId,
-      quantity: payload.quantity,
-      soldBy: payload.soldBy,
-      soldDate: payload.soldDate,
-    });
+    const recordResult = await RecordModel.create(
+      [
+        {
+          stockId: payload.stockId,
+          quantity: payload.quantity,
+          soldBy: payload.soldBy,
+          soldDate: payload.soldDate,
+        },
+      ],
+      { session }
+    );
 
-    if (!recordResult) {
+    if (!recordResult.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
     }
 
@@ -104,6 +106,10 @@ const sellStockFromDB = async (payload: Partial<TRecord>) => {
         message:
           "Stock added to sell queue, awaiting for approval. Quantity to sell: " +
           payload.quantity!,
+      },
+      {
+        new: true,
+        session,
       }
     );
 

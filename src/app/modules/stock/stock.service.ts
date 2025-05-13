@@ -29,7 +29,6 @@ const getAllStockFromDB = async (query: Record<string, unknown>) => {
 const updateStockInDB = async (id: string, payload: Partial<TStock>) => {
   const isStockExist = await StockModel.findOne({
     _id: id,
-    status: "ACCEPTED",
   });
 
   if (!isStockExist) {
