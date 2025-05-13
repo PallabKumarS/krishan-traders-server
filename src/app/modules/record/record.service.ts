@@ -83,18 +83,39 @@ const sellStockFromDB = async (payload: Partial<TRecord>) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Stock already sold");
   }
 
-  const recordResult = await RecordModel.create({
-    stockId: payload.stockId,
-    quantity: payload.quantity,
-    soldBy: payload.soldBy,
-    soldDate: payload.soldDate,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!recordResult) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
+  try {
+    const recordResult = await RecordModel.create({
+      stockId: payload.stockId,
+      quantity: payload.quantity,
+      soldBy: payload.soldBy,
+      soldDate: payload.soldDate,
+    });
+
+    if (!recordResult) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
+    }
+
+    const stockResult = await StockModel.findOneAndUpdate(
+      { _id: payload.stockId },
+      {
+        message:
+          "Stock added to sell queue, awaiting for approval. Quantity to sell: " +
+          payload.quantity!,
+      }
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return recordResult;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
   }
-
-  return recordResult;
 };
 
 // change stock status to accepted
@@ -116,7 +137,6 @@ const acceptAddStockInDB = async (
 
   const session = await mongoose.startSession();
   session.startTransaction();
-
 
   // reject stock
   if (payload.status === "rejected") {
@@ -204,6 +224,7 @@ const acceptSellStockInDB = async (
   const session = await mongoose.startSession();
   session.startTransaction();
 
+  // if rejected
   if (payload.status === "rejected") {
     try {
       const result = await RecordModel.findOneAndUpdate(
@@ -242,6 +263,7 @@ const acceptSellStockInDB = async (
         soldBy: isRecordExists.soldBy,
         soldDate: isRecordExists.soldDate,
         status: quantity === 0 ? "sold" : "accepted",
+        message: "",
       },
       {
         new: true,

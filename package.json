@@ -1,6 +1,13 @@
 {
+  "keywords": [
+    "krishan-traders",
+    "nodejs",
+    "express",
+    "typescript"
+  ],
+  "author": "Pallab Kumar Sarker",
+  "license": "ISC",
   "name": "krishan-traders-server",
-  "module": "./src/server.ts",
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",

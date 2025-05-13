@@ -14,7 +14,9 @@ const getAllStockFromDB = async (query: Record<string, unknown>) => {
     .filter()
     .search(["productName", "brandName"]);
 
-  const data = await stockQuery.modelQuery;
+  const data = await stockQuery.modelQuery
+    .populate("soldBy")
+    .populate("stockedBy");
   const meta = await stockQuery.countTotal();
 
   return {

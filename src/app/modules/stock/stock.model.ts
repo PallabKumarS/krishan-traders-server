@@ -10,13 +10,14 @@ const stockSchema = new Schema<TStock>(
     stockedDate: { type: Date, required: true },
     expiryDate: { type: Date, required: true },
     soldDate: { type: Date },
-    stockedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    soldBy: { type: Schema.Types.ObjectId, ref: "User" },
+    stockedBy: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    soldBy: { type: Schema.Types.ObjectId, ref: "Users" },
     status: {
       type: String,
       enum: ["pending", "accepted", "sold", "expired", "rejected"],
       default: "pending",
     },
+    message: { type: String },
   },
   {
     timestamps: true,

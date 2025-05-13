@@ -11,6 +11,7 @@ export type TStock = {
   expiryDate: Date;
   soldDate?: Date;
   soldBy?: Types.ObjectId;
+  message?: string;
   _id?: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
