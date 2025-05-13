@@ -16,35 +16,6 @@ const getAllStock = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// add stock
-const addStock = catchAsync(async (req: Request, res: Response) => {
-  const result = await StockService.addStockToDB(req.body);
-
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Stock added successfully",
-    data: result,
-  });
-});
-
-// sell stock
-const sellStock = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id!;
-  const result = await StockService.sellStockFromDB(
-    id,
-    req.body,
-    req.user.userId
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Stock sold successfully",
-    data: result,
-  });
-});
-
 // update stock
 const updateStock = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id!;
@@ -54,19 +25,6 @@ const updateStock = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Stock updated successfully",
-    data: result,
-  });
-});
-
-// accept stock
-const acceptStock = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id!;
-  const result = await StockService.acceptStockInDB(id);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Stock accepted successfully",
     data: result,
   });
 });
@@ -86,9 +44,6 @@ const deleteStock = catchAsync(async (req: Request, res: Response) => {
 
 export const StockController = {
   getAllStock,
-  addStock,
-  sellStock,
   updateStock,
   deleteStock,
-  acceptStock,
 };

@@ -4,18 +4,16 @@ import { TRecord } from "./record.interface";
 const recordSchema = new Schema<TRecord>(
   {
     quantity: { type: Number, required: true },
-    soldBy: { type: Schema.Types.ObjectId, ref: "User" },
+    soldBy: { type: Schema.Types.ObjectId, ref: "Users" },
     soldDate: {
       type: Date,
-      default: Date.now,
     },
     stockedBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Users",
     },
-    stockDate: {
+    stockedDate: {
       type: Date,
-      default: Date.now,
     },
     stockId: {
       type: Schema.Types.ObjectId,
@@ -24,7 +22,7 @@ const recordSchema = new Schema<TRecord>(
     },
     status: {
       type: String,
-      enum: ["pending", "accepted", "sold", "stocked", "rejected"],
+      enum: ["pending", "accepted", "sold", "expired", "rejected"],
       default: "pending",
     },
   },

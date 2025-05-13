@@ -21,6 +21,7 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // all routes here
 app.use("/api/auth", AuthRoutes);
