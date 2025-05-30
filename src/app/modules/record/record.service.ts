@@ -33,19 +33,65 @@ const addStockToDB = async (payload: Partial<TStock>) => {
   session.startTransaction();
 
   try {
-    const stockResult = await StockModel.create([payload], { session });
+    // find same product
+    const isStockExist = await StockModel.findOne({
+      productName: payload.productName,
+      companyName: payload.companyName,
+      size: payload.size,
+      expiryDate: payload.expiryDate,
+    });
 
-    if (!stockResult.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Failed to add stock");
+    let stockDocument: TStock;
+
+    if (isStockExist) {
+      // Update existing stock quantity
+      const updateResult = await StockModel.updateOne(
+        { _id: isStockExist._id },
+        {
+          $inc: {
+            quantity: payload.quantity,
+          },
+        },
+        { session }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Failed to update stock quantity"
+        );
+      }
+
+      // Fetch the updated document
+      const updatedStock = await StockModel.findById(isStockExist._id).session(
+        session
+      );
+      if (!updatedStock) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Failed to retrieve updated stock"
+        );
+      }
+      stockDocument = updatedStock;
+    } else {
+      // Create new stock
+      const result = await StockModel.create([payload], { session });
+      if (!result.length) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Failed to create new stock"
+        );
+      }
+      stockDocument = result[0];
     }
 
     const recordResult = await RecordModel.create(
       [
         {
-          stockId: stockResult[0]!._id as mongoose.Types.ObjectId,
-          stockedDate: stockResult[0]!.stockedDate,
-          stockedBy: stockResult[0]!.stockedBy,
-          quantity: stockResult[0]!.quantity,
+          stockId: stockDocument._id as mongoose.Types.ObjectId,
+          stockedDate: stockDocument.stockedDate,
+          stockedBy: stockDocument.stockedBy,
+          quantity: payload.quantity,
         },
       ],
       { session }
@@ -58,7 +104,7 @@ const addStockToDB = async (payload: Partial<TStock>) => {
     await session.commitTransaction();
     await session.endSession();
 
-    return stockResult[0];
+    return stockDocument;
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -167,46 +213,47 @@ const acceptAddStockInDB = async (
       }
       await session.commitTransaction();
       await session.endSession();
+
       return stockResult;
     } catch (error) {
       await session.abortTransaction();
       await session.endSession();
       throw error;
     }
-  }
+  } // accept stock
+  else {
+    try {
+      const stockResult = await StockModel.findOneAndUpdate(
+        { _id: isRecordExists.stockId },
+        { status: "accepted" },
+        {
+          new: true,
+          session,
+        }
+      );
 
-  // accept stock
-  try {
-    const stockResult = await StockModel.findOneAndUpdate(
-      { _id: isRecordExists.stockId },
-      { status: "accepted" },
-      {
-        new: true,
-        session,
+      if (!stockResult) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Failed to accept stock");
       }
-    );
 
-    if (!stockResult) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Failed to accept stock");
+      const recordResult = await RecordModel.findOneAndUpdate(
+        { _id: id },
+        { status: "accepted" },
+        { new: true, session }
+      );
+
+      if (!recordResult) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
+      }
+      await session.commitTransaction();
+      await session.endSession();
+
+      return stockResult;
+    } catch (error) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw error;
     }
-
-    const recordResult = await RecordModel.findOneAndUpdate(
-      { stockId: stockResult._id },
-      { status: "accepted" },
-      { new: true, session }
-    );
-
-    if (!recordResult) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
-    }
-    await session.commitTransaction();
-    await session.endSession();
-
-    return stockResult;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw error;
   }
 };
 
