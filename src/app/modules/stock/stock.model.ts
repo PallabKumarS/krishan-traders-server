@@ -3,7 +3,7 @@ import { TStock } from "./stock.interface";
 
 const stockSchema = new Schema<TStock>(
   {
-    brandName: { type: String, required: true },
+    companyName: { type: String, required: true },
     productName: { type: String, required: true },
     size: { type: String, required: true },
     quantity: { type: Number, required: true },

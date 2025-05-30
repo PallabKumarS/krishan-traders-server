@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const createStockValidation = z.object({
   body: z.object({
-    brandName: z.string({
+    companyName: z.string({
       required_error: "Name is required",
     }),
     productName: z.string({

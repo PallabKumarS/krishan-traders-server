@@ -12,7 +12,7 @@ const getAllStockFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .sort()
     .filter()
-    .search(["productName", "brandName"]);
+    .search(["productName", "companyName"]);
 
   const data = await stockQuery.modelQuery
     .populate("soldBy")

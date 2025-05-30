@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type TStock = {
-  brandName: string;
+  companyName: string;
   productName: string;
   size: string;
   status: TStockStatus;
