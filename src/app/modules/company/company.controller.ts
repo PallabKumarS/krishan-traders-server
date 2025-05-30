@@ -5,7 +5,7 @@ import sendResponse from "../../utils/sendResponse";
 
 // get all company
 const getAllCompany = catchAsync(async (req: Request, res: Response) => {
-  const data = await CompanyService.getAllCompanyFromDB();
+  const data = await CompanyService.getAllCompanyFromDB(req.query);
 
   sendResponse(res, {
     statusCode: 200,

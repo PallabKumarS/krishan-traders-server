@@ -4,7 +4,9 @@ import { TCompany } from "./company.interface";
 const companySchema = new Schema<TCompany>(
   {
     name: { type: String, required: true },
+    isDisabled: { type: Boolean, default: false },
   },
+
   {
     timestamps: true,
   }

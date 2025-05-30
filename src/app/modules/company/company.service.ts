@@ -3,8 +3,11 @@ import CompanyModel from "./company.model";
 import StockModel from "../stock/stock.model";
 
 // get all company from db
-const getAllCompanyFromDB = async () => {
-  const result = await CompanyModel.find({});
+const getAllCompanyFromDB = async (query?: Record<string, unknown>) => {
+  const sort = (query?.sort as string)?.split(",")?.join(" ") || "name";
+
+  const result = await CompanyModel.find({}).sort(sort);
+
   return result;
 };
 

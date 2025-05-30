@@ -1,6 +1,7 @@
 export type TCompany = {
   name: string;
-  id?: string;
+  isDisabled: boolean;
+  _id?: string;
   __v?: number;
   createdAt?: string;
   updatedAt?: string;
