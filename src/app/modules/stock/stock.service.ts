@@ -1,28 +1,30 @@
-import mongoose from "mongoose";
-import QueryBuilder from "../../builder/QueryBuilder";
 import { TStock } from "./stock.interface";
 import StockModel from "./stock.model";
 import { AppError } from "../../errors/AppError";
 import httpStatus from "http-status";
-import RecordModel from "../record/record.model";
 
 // get all stock
-const getAllStockFromDB = async (query: Record<string, unknown>) => {
-  const stockQuery = new QueryBuilder(StockModel.find(), query)
-    .paginate()
-    .sort()
-    .filter()
-    .search(["productName", "companyName"]);
+const getAllStockFromDB = async (query?: Record<string, unknown>) => {
+  const filter: Record<string, unknown> = {};
 
-  const data = await stockQuery.modelQuery
+  if (query?.status) {
+    filter.status = query.status;
+  }
+
+  if (query?.productName) {
+    filter.productName = { $regex: query.productName, $options: "i" };
+  }
+
+  if (query?.companyName) {
+    filter.companyName = { $regex: query.companyName, $options: "i" };
+  }
+
+  const data = await StockModel.find(filter)
+    .sort((query?.sort as string) || "-createdAt")
     .populate("soldBy")
     .populate("stockedBy");
-  const meta = await stockQuery.countTotal();
 
-  return {
-    meta,
-    data,
-  };
+  return data;
 };
 
 // update stock

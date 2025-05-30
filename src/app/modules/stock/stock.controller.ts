@@ -11,8 +11,7 @@ const getAllStock = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Stocks retrieved successfully",
-    data: data.data,
-    meta: data.meta,
+    data,
   });
 });
 
