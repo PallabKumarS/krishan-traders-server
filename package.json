@@ -9,6 +9,7 @@
   "license": "ISC",
   "name": "krishan-traders-server",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "bun run tsc",

@@ -68,7 +68,7 @@ const acceptSellStock = catchAsync(async (req: Request, res: Response) => {
 // delete record
 const deleteRecord = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id!;
-  const result = await RecordService.deleteRecordFromDB(id);
+  await RecordService.deleteRecordFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -9,6 +9,7 @@ import { UserRoutes } from "./app/modules/user/user.routes";
 import { StockRoutes } from "./app/modules/stock/stock.routes";
 import { RecordRoutes } from "./app/modules/record/record.routes";
 import { CompanyRoutes } from "./app/modules/company/company.routes";
+import { SizeRoutes } from "./app/modules/size/size.routes";
 
 const app: Application = express();
 
@@ -30,6 +31,7 @@ app.use("/api/users", UserRoutes);
 app.use("/api/stocks", StockRoutes);
 app.use("/api/records", RecordRoutes);
 app.use("/api/company", CompanyRoutes);
+app.use("/api/sizes", SizeRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`
