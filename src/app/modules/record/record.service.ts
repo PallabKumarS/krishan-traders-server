@@ -146,7 +146,7 @@ const sellStockFromDB = async (payload: Partial<TRecord>) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to add to records");
     }
 
-    const stockResult = await StockModel.findOneAndUpdate(
+    await StockModel.findOneAndUpdate(
       { _id: payload.stockId },
       {
         message:
