@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import globals from "globals";
 import { configs } from "typescript-eslint";
 import { defineConfig } from "eslint/config";
@@ -9,7 +8,7 @@ export default defineConfig([
     languageOptions: {
       parserOptions: {
         ecmaVersion: "latest",
-        sourceType: "module",
+        sourceType: "commonjs",
       },
       globals: {
         ...globals.node,
