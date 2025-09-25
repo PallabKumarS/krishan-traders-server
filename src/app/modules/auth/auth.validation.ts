@@ -16,7 +16,23 @@ const changePasswordValidationSchema = z.object({
   }),
 });
 
+const forgotPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z.string({ required_error: "Email is required" }),
+  }),
+});
+
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    password: z.string({ required_error: "Password is required" }),
+    email: z.string({ required_error: "Email is required" }),
+    code: z.number({ required_error: "Code is required" }),
+  }),
+});
+
 export const AuthValidation = {
   loginValidationSchema,
   changePasswordValidationSchema,
+  forgotPasswordValidationSchema,
+  resetPasswordValidationSchema,
 };

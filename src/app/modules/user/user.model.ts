@@ -10,7 +10,7 @@ const userSchema = new Schema<TUser, IUser>(
     password: { type: String, required: true, select: 0 },
     role: {
       type: String,
-      enum: ["admin", "staff", "guest"],
+      enum: ["admin", "staff", "guest", "subAdmin"],
       default: "guest",
     },
     phoneNumber: { type: String },
@@ -18,6 +18,7 @@ const userSchema = new Schema<TUser, IUser>(
     profileImg: { type: String },
     status: { type: String, enum: ["active", "blocked"], default: "active" },
     isDeleted: { type: Boolean, default: false },
+    forgotPasswordToken: { type: Number, default: null },
   },
   {
     timestamps: true,

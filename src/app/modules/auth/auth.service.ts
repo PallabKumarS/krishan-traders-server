@@ -7,6 +7,7 @@ import { TLoginUser } from "./auth.interface";
 import { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { TUser } from "../user/user.interface";
+import { sendPasswordResetEmail } from "../../utils/sendMail";
 
 // login user here
 const loginUser = async (payload: TLoginUser) => {
@@ -180,9 +181,69 @@ const refreshToken = async (token: string) => {
   };
 };
 
+// forgot password
+const forgotPassword = async (email: string) => {
+  const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found !");
+  }
+
+  const code = Math.floor(100000 + Math.random() * 900000); // generate 6 digit random number
+
+  const info = await sendPasswordResetEmail(
+    user?.email as string,
+    code,
+    user?.name as string
+  );
+
+  if (!info) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to send email"
+    );
+  }
+
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { email },
+    { forgotPasswordToken: code },
+    { new: true }
+  );
+
+  return updatedUser;
+};
+
+// reset password
+const resetPassword = async (
+  code: number,
+  newPassword: string,
+  email: string
+) => {
+  const user = await UserModel.findOne({ email, forgotPasswordToken: code });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "Code is incorrect");
+  }
+
+  const newHashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { forgotPasswordToken: code },
+    { password: newHashedPassword, forgotPasswordToken: null },
+    { new: true }
+  );
+
+  return updatedUser;
+};
+
 export const AuthService = {
   loginUser,
   changePassword,
   refreshToken,
   registerUser,
+  forgotPassword,
+  resetPassword,
 };

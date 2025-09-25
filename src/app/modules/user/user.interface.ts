@@ -11,6 +11,7 @@ export type TUser = {
   address?: string;
   profileImg?: string;
   _id?: Types.ObjectId;
+  forgotPasswordToken?: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
